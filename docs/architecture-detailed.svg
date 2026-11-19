@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1580 800" width="1580" height="800" font-family="system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="15">
+<title>ARC Order Portal: production architecture</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#12161c"/></marker></defs>
+<rect width="1580" height="800" fill="#ffffff"/>
+<text x="40" y="44" font-size="24" font-weight="700" fill="#12161c">ARC Order Portal: production architecture</text>
+<text x="40" y="68" fill="#4a5361">One EU region (Frankfurt), backups in a second EU region. Today's prototype is the solid importer → database → portal path.</text>
+<text x="40" y="92" font-size="13" letter-spacing="1.2" fill="#4a5361">SOURCES</text>
+<text x="330" y="92" font-size="13" letter-spacing="1.2" fill="#4a5361">INGEST</text>
+<text x="620" y="92" font-size="13" letter-spacing="1.2" fill="#4a5361">CORE SERVICES</text>
+<text x="910" y="92" font-size="13" letter-spacing="1.2" fill="#4a5361">DATA</text>
+<text x="1200" y="92" font-size="13" letter-spacing="1.2" fill="#4a5361">SERVE</text>
+<rect x="40" y="118.0" width="230" height="64" rx="8" fill="#eef4fd" stroke="#1f5fbf" stroke-width="2"/>
+<text x="155.0" y="142" text-anchor="middle" font-weight="600" fill="#12161c">ERP</text>
+<text x="155.0" y="164" text-anchor="middle" font-size="13" fill="#4a5361">orders export</text>
+<rect x="40" y="228.0" width="230" height="64" rx="8" fill="#fbf7ef" stroke="#8a6d3b" stroke-width="2" stroke-dasharray="7 5"/>
+<text x="155.0" y="252" text-anchor="middle" font-weight="600" fill="#12161c">Drone fleet</text>
+<text x="155.0" y="274" text-anchor="middle" font-size="13" fill="#4a5361">telemetry, proof of delivery</text>
+<rect x="40" y="408.0" width="230" height="64" rx="8" fill="#fbf7ef" stroke="#8a6d3b" stroke-width="2" stroke-dasharray="7 5"/>
+<text x="155.0" y="432" text-anchor="middle" font-weight="600" fill="#12161c">MES / WMS</text>
+<text x="155.0" y="454" text-anchor="middle" font-size="13" fill="#4a5361">production, raw material</text>
+<rect x="40" y="528.0" width="230" height="64" rx="8" fill="#eef4fd" stroke="#1f5fbf" stroke-width="2"/>
+<text x="155.0" y="552" text-anchor="middle" font-weight="600" fill="#12161c">Calendars</text>
+<text x="155.0" y="574" text-anchor="middle" font-size="13" fill="#4a5361">holidays per state, airspace</text>
+<rect x="330" y="118.0" width="230" height="64" rx="8" fill="#eef4fd" stroke="#1f5fbf" stroke-width="2"/>
+<text x="445.0" y="142" text-anchor="middle" font-weight="600" fill="#12161c">Landing + validate</text>
+<text x="445.0" y="164" text-anchor="middle" font-size="13" fill="#4a5361">today&#x27;s importer, atomic swap</text>
+<rect x="330" y="234.0" width="230" height="64" rx="8" fill="#eef4fd" stroke="#1f5fbf" stroke-width="2"/>
+<text x="445.0" y="258" text-anchor="middle" font-weight="600" fill="#12161c">Data-quality report</text>
+<text x="445.0" y="280" text-anchor="middle" font-size="13" fill="#4a5361">rejected rows, dev team</text>
+<rect x="330" y="358.0" width="230" height="64" rx="8" fill="#fbf7ef" stroke="#8a6d3b" stroke-width="2" stroke-dasharray="7 5"/>
+<text x="445.0" y="382" text-anchor="middle" font-weight="600" fill="#12161c">Event bus</text>
+<text x="445.0" y="404" text-anchor="middle" font-size="13" fill="#4a5361">Kafka / Kinesis, keyed by event ID</text>
+<rect x="620" y="234.0" width="230" height="64" rx="8" fill="#fbf7ef" stroke="#8a6d3b" stroke-width="2" stroke-dasharray="7 5"/>
+<text x="735.0" y="258" text-anchor="middle" font-weight="600" fill="#12161c">Reconciliation</text>
+<text x="735.0" y="280" text-anchor="middle" font-size="13" fill="#4a5361">unmatched, unconfirmed → outbox</text>
+<rect x="620" y="358.0" width="230" height="64" rx="8" fill="#fbf7ef" stroke="#8a6d3b" stroke-width="2" stroke-dasharray="7 5"/>
+<text x="735.0" y="382" text-anchor="middle" font-weight="600" fill="#12161c">Order status</text>
+<text x="735.0" y="404" text-anchor="middle" font-size="13" fill="#4a5361">actual event beats plan</text>
+<rect x="620" y="528.0" width="230" height="64" rx="8" fill="#eef4fd" stroke="#1f5fbf" stroke-width="2"/>
+<text x="735.0" y="552" text-anchor="middle" font-weight="600" fill="#12161c">Planner (Task B)</text>
+<text x="735.0" y="574" text-anchor="middle" font-size="13" fill="#4a5361">daily + on-event re-plan</text>
+<rect x="910" y="118" width="230" height="114" rx="8" fill="#eef4fd" stroke="#1f5fbf" stroke-width="2"/>
+<text x="1025.0" y="152" text-anchor="middle" font-weight="600" fill="#12161c">Postgres Multi-AZ</text>
+<text x="1025.0" y="174" text-anchor="middle" font-size="13" fill="#4a5361">orders, events, plans; KMS, PITR</text>
+<rect x="910" y="358.0" width="230" height="64" rx="8" fill="#fbf7ef" stroke="#8a6d3b" stroke-width="2" stroke-dasharray="7 5"/>
+<text x="1025.0" y="382" text-anchor="middle" font-weight="600" fill="#12161c">Read replica</text>
+<text x="1025.0" y="404" text-anchor="middle" font-size="13" fill="#4a5361">+ KPI tables for Insights</text>
+<rect x="910" y="528.0" width="230" height="64" rx="8" fill="#fbf7ef" stroke="#8a6d3b" stroke-width="2" stroke-dasharray="7 5"/>
+<text x="1025.0" y="552" text-anchor="middle" font-weight="600" fill="#12161c">Warehouse</text>
+<text x="1025.0" y="574" text-anchor="middle" font-size="13" fill="#4a5361">history, forecasting</text>
+<rect x="1200" y="118.0" width="230" height="64" rx="8" fill="#eef4fd" stroke="#1f5fbf" stroke-width="2"/>
+<text x="1315.0" y="142" text-anchor="middle" font-weight="600" fill="#12161c">CDN + WAF</text>
+<text x="1315.0" y="164" text-anchor="middle" font-size="13" fill="#4a5361">TLS, rate limits</text>
+<rect x="1200" y="358.0" width="230" height="64" rx="8" fill="#eef4fd" stroke="#1f5fbf" stroke-width="2"/>
+<text x="1315.0" y="382" text-anchor="middle" font-weight="600" fill="#12161c">Portal API</text>
+<text x="1315.0" y="404" text-anchor="middle" font-size="13" fill="#4a5361">stateless, 2+ AZs, autoscaled</text>
+<rect x="1200" y="528.0" width="230" height="64" rx="8" fill="#eef4fd" stroke="#1f5fbf" stroke-width="2"/>
+<text x="1315.0" y="552" text-anchor="middle" font-weight="600" fill="#12161c">SSO + MFA</text>
+<text x="1315.0" y="574" text-anchor="middle" font-size="13" fill="#4a5361">roles: CEO, ops, CS, dev</text>
+<rect x="1200" y="234.0" width="230" height="64" rx="8" fill="#fbf7ef" stroke="#8a6d3b" stroke-width="2" stroke-dasharray="7 5"/>
+<text x="1315.0" y="258" text-anchor="middle" font-weight="600" fill="#12161c">Notifications</text>
+<text x="1315.0" y="280" text-anchor="middle" font-size="13" fill="#4a5361">email / Teams, deduped</text>
+<text x="1474" y="398" font-weight="600" fill="#12161c">CEO</text>
+<text x="1474" y="418" font-size="13" fill="#4a5361">ops, CS, dev</text>
+<path d="M270,150 L326,150" fill="none" stroke="#12161c" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M560,150 L906,150" fill="none" stroke="#12161c" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M445.0,182 L445.0,230" fill="none" stroke="#12161c" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M270,270 L326,378" fill="none" stroke="#12161c" stroke-width="1.6" stroke-dasharray="7 5" marker-end="url(#a)"/>
+<path d="M270,440 L326,404" fill="none" stroke="#12161c" stroke-width="1.6" stroke-dasharray="7 5" marker-end="url(#a)"/>
+<path d="M560,390 L616,390" fill="none" stroke="#12161c" stroke-width="1.6" stroke-dasharray="7 5" marker-end="url(#a)"/>
+<path d="M850,382 L906,190" fill="none" stroke="#12161c" stroke-width="1.6" stroke-dasharray="7 5" marker-end="url(#a)"/>
+<path d="M906,180 L854,252" fill="none" stroke="#12161c" stroke-width="1.6" stroke-dasharray="7 5" marker-end="url(#a)"/>
+<path d="M270,560 L616,560" fill="none" stroke="#12161c" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M940,232 L820,524" fill="none" stroke="#12161c" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M735.0,592 L735.0,625 L20,625 L20,260 L36,260" fill="none" stroke="#12161c" stroke-width="1.6" stroke-dasharray="7 5" marker-end="url(#a)"/>
+<text x="350" y="618" font-size="13" fill="#4a5361">flight plans to the fleet</text>
+<path d="M1025.0,232 L1025.0,354" fill="none" stroke="#12161c" stroke-width="1.6" stroke-dasharray="7 5" marker-end="url(#a)"/>
+<path d="M1140,390 L1196,390" fill="none" stroke="#12161c" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M1140,200 L1154,200 L1154,560 L1144,560" fill="none" stroke="#12161c" stroke-width="1.6" stroke-dasharray="7 5" marker-end="url(#a)"/>
+<path d="M1430,160 L1446,160 L1446,378 L1434,378" fill="none" stroke="#12161c" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M1315.0,528 L1315.0,426" fill="none" stroke="#12161c" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M1430,402 L1464,402" fill="none" stroke="#12161c" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M850,266 L1196,266" fill="none" stroke="#12161c" stroke-width="1.6" stroke-dasharray="7 5" marker-end="url(#a)"/>
+<line x1="40" x2="90" y1="680" y2="680" stroke="#12161c" stroke-width="1.6"/><text x="100" y="685" fill="#12161c">Build first (launch)</text>
+<line x1="290" x2="340" y1="680" y2="680" stroke="#12161c" stroke-width="1.6" stroke-dasharray="7 5"/><text x="350" y="685" fill="#12161c">Add when scale or scope demands it</text>
+<rect x="40" y="710" width="1500" height="48" rx="8" fill="#f4f6f9" stroke="#c9d0da"/>
+<text x="60" y="740" fill="#12161c"><tspan font-weight="600">Platform, across every box: </tspan>Secrets Manager + KMS · audit log · GDPR retention jobs · logs without personal data · SLOs (freshness, latency) · cross-region EU backups</text>
+</svg>

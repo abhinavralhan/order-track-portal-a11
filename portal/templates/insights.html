@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% block main %}
+<h1>Insights</h1>
+<p class="muted">Today: {{ today }} (Europe/Berlin). Planned figures: ship date = ready date, delivery = 3 working days later at the destination.</p>
+{% if empty %}
+<p>No orders imported yet. Check the <a href="/quality">data import report</a>.</p>
+{% else %}
+
+<div class="kpis">
+  <div class="kpi"><span class="kpi-label">Orders in plan</span><span class="kpi-value">{{ "{:,}".format(kpi.total) }}</span></div>
+  <div class="kpi"><span class="kpi-label">Delivered so far (planned)</span><span class="kpi-value">{{ "{:,}".format(kpi.delivered) }}</span>
+    <span class="kpi-note">{{ "%.0f"|format(100 * kpi.delivered / kpi.total if kpi.total else 0) }}% of all orders</span></div>
+  <div class="kpi"><span class="kpi-label">Within the 5-day promise</span><span class="kpi-value">{{ "%.1f"|format(kpi.on_promise) }}%</span>
+    <span class="kpi-note">{{ kpi.late }} order{{ "" if kpi.late == 1 else "s" }} planned to miss it</span></div>
+  <div class="kpi"><span class="kpi-label">Last planned delivery</span><span class="kpi-value">{{ kpi.last }}</span></div>
+</div>
+
+<figure class="chart">
+  <figcaption><h2>Orders going out per day, by status</h2>
+    <p class="muted">Each column is one ship day. Hover or focus a column for its numbers.</p></figcaption>
+  <ul class="legend">
+    {% for s in daily.series %}
+    <li><span class="swatch {{ daily.classes[s] }}"></span>{% if loop.last %}<span aria-hidden="true">⚠ </span>{% endif %}{{ s }}</li>
+    {% endfor %}
+  </ul>
+  <div class="table-wrap">
+  <svg viewBox="0 0 960 280" role="img" aria-label="Stacked columns of orders per ship day by status">
+    {% for v, y in daily.yticks %}
+    <line class="grid" x1="48" x2="952" y1="{{ y }}" y2="{{ y }}"/><text class="tick" x="42" y="{{ y + 4 }}" text-anchor="end">{{ v }}</text>
+    {% endfor %}
+    {% for c in daily.cols %}
+    <g class="col" tabindex="0" aria-label="{{ c.label }}"><title>{{ c.label }}</title>
+      <rect class="hit" x="{{ c.x - 11 }}" y="16" width="22" height="234"/>
+      {% for s in c.segs %}<path class="{{ s.cls }}" d="{{ s.d }}"/>{% endfor %}
+    </g>
+    {% if c.today %}<line class="today" x1="{{ c.x }}" x2="{{ c.x }}" y1="12" y2="250"/><text class="tick" x="{{ c.x + 4 }}" y="12">Today</text>{% endif %}
+    {% if c.tick %}<text class="tick" x="{{ c.x }}" y="268" text-anchor="middle">{{ c.day[5:] }}</text>{% endif %}
+    {% endfor %}
+    <line class="axis" x1="48" x2="952" y1="250" y2="250"/>
+  </svg>
+  </div>
+  <details><summary>Show as table</summary>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Ship day</th>{% for s in daily.series %}<th>{{ s }}</th>{% endfor %}<th>Total</th></tr></thead>
+      <tbody>{% for d, vals, total in daily.table %}<tr><td>{{ d }}</td>{% for v in vals %}<td class="num">{{ v }}</td>{% endfor %}<td class="num">{{ total }}</td></tr>{% endfor %}</tbody>
+    </table></div>
+  </details>
+</figure>
+
+<figure class="chart">
+  <figcaption><h2>Why some orders fail</h2></figcaption>
+  {% if fail.late %}
+  <p><strong>{{ fail.late }} orders are planned to miss the 5-day promise</strong>, all to {{ fail.late_cities|join(" and ") }}.
+    {% for cause, n in fail.causes %}{{ n }} because of: {{ cause }}. {% endfor %}
+    Closed days at the destination stretch their 3-working-day delivery beyond 5 calendar days.
+    <br>What to do: a drone flight takes hours, so these can still go out and arrive on the day they are ready (see Task B), or agree delivery on the holiday with the customer.</p>
+  {% endif %}
+  {% if fail.on_hold %}
+  <p><strong>{{ fail.on_hold }} order rows are on hold</strong> because the order export has errors (listed below in plain words). They cannot ship until the source data is fixed; the dev team has the details on the <a href="/quality">data import report</a>.</p>
+  {% endif %}
+  <div class="table-wrap">
+  <svg viewBox="0 0 760 {{ fail.bars|length * 26 }}" role="img" aria-label="Reasons orders fail, largest first within each group">
+    {% for b in fail.bars %}
+    <g><title>{{ b.group }}: {{ b.reason }}, {{ b.n }}</title>
+      <text class="tick" x="290" y="{{ b.y + 17 }}" text-anchor="end">{{ b.reason }}</text>
+      <path class="{{ 's-risk' if b.group != 'On hold' else 'hold' }}" d="M300,{{ b.y + 5 }} H{{ 300 + b.w - 4 }} Q{{ 300 + b.w }},{{ b.y + 5 }} {{ 300 + b.w }},{{ b.y + 9 }} V{{ b.y + 17 }} Q{{ 300 + b.w }},{{ b.y + 21 }} {{ 300 + b.w - 4 }},{{ b.y + 21 }} H300 Z"/>
+      <text class="label" x="{{ 306 + b.w }}" y="{{ b.y + 17 }}">{{ b.n }}</text>
+    </g>
+    {% endfor %}
+  </svg>
+  </div>
+  <ul class="legend">
+    <li><span class="swatch s-risk"></span><span aria-hidden="true">⚠ </span>Misses 5-day promise (orders)</li>
+    <li><span class="swatch hold"></span>On hold: data error (order rows)</li>
+  </ul>
+  <details><summary>Show as table</summary>
+    <table><thead><tr><th>Group</th><th>Reason</th><th>Count</th></tr></thead>
+      <tbody>{% for b in fail.bars %}<tr><td>{{ b.group }}</td><td>{{ b.reason }}</td><td class="num">{{ b.n }}</td></tr>{% endfor %}</tbody>
+    </table>
+  </details>
+</figure>
+
+<figure class="chart">
+  <figcaption><h2>Planned deliveries, cumulative</h2>
+    <p class="muted">How many orders have arrived by each day, if every order ships on its ready date.</p></figcaption>
+  <div class="table-wrap">
+  <svg viewBox="0 0 960 280" role="img" aria-label="Cumulative planned deliveries over time">
+    {% for v, y in cum.yticks %}
+    <line class="grid" x1="48" x2="880" y1="{{ y }}" y2="{{ y }}"/><text class="tick" x="42" y="{{ y + 4 }}" text-anchor="end">{{ "{:,}".format(v) }}</text>
+    {% endfor %}
+    {% for d, x in cum.xticks %}<text class="tick" x="{{ x }}" y="268" text-anchor="middle">{{ d[5:] }}</text>{% endfor %}
+    <line class="axis" x1="48" x2="880" y1="250" y2="250"/>
+    <path class="line" d="{{ cum.path }}"/>
+    {% if cum.now %}
+    <line class="today" x1="{{ cum.now[2] }}" x2="{{ cum.now[2] }}" y1="12" y2="250"/>
+    <circle class="dot" cx="{{ cum.now[2] }}" cy="{{ cum.now[3] }}" r="5"><title>{{ cum.now[0] }}: {{ cum.now[1] }} delivered (planned)</title></circle>
+    <text class="label" x="{{ cum.now[2] + 8 }}" y="{{ cum.now[3] + 18 }}">{{ "{:,}".format(cum.now[1]) }} by today</text>
+    {% endif %}
+    <circle class="dot" cx="{{ cum.end[2] }}" cy="{{ cum.end[3] }}" r="5"><title>{{ cum.end[0] }}: all {{ cum.end[1] }} delivered (planned)</title></circle>
+    <text class="label" x="{{ cum.end[2] + 8 }}" y="{{ cum.end[3] + 4 }}">{{ "{:,}".format(cum.end[1]) }}</text>
+    <text class="tick" x="{{ cum.end[2] + 8 }}" y="{{ cum.end[3] + 20 }}">{{ cum.end[0][5:] }}</text>
+  </svg>
+  </div>
+</figure>
+
+<figure class="chart">
+  <figcaption><h2>Orders by destination</h2></figcaption>
+  <div class="table-wrap">
+  <svg viewBox="0 0 760 {{ cities|length * 26 }}" role="img" aria-label="Orders per destination city, largest first">
+    {% for c in cities %}
+    <g><title>{{ c.city }}: {{ c.n }} orders, {{ "{:,}".format(c.units) }} units</title>
+      <text class="tick" x="130" y="{{ c.y + 17 }}" text-anchor="end">{{ c.city }}</text>
+      <path class="bar" d="M140,{{ c.y + 5 }} H{{ 140 + c.w - 4 }} Q{{ 140 + c.w }},{{ c.y + 5 }} {{ 140 + c.w }},{{ c.y + 9 }} V{{ c.y + 17 }} Q{{ 140 + c.w }},{{ c.y + 21 }} {{ 140 + c.w - 4 }},{{ c.y + 21 }} H140 Z"/>
+      <text class="label" x="{{ 146 + c.w }}" y="{{ c.y + 17 }}">{{ c.n }}</text>
+    </g>
+    {% endfor %}
+  </svg>
+  </div>
+  <details><summary>Show as table</summary>
+    <table><thead><tr><th>City</th><th>Orders</th><th>Units</th></tr></thead>
+      <tbody>{% for c in cities %}<tr><td>{{ c.city }}</td><td class="num">{{ c.n }}</td><td class="num">{{ "{:,}".format(c.units) }}</td></tr>{% endfor %}</tbody>
+    </table>
+  </details>
+</figure>
+{% endif %}
+{% endblock %}

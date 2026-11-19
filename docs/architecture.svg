@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1380 560" width="1380" height="560" font-family="system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="16">
+<title>ARC Order Portal in production</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#12161c"/></marker></defs>
+<rect width="1380" height="560" fill="#ffffff"/>
+
+<text x="40" y="52" font-size="28" font-weight="700" fill="#12161c">ARC Order Portal in production</text>
+<text x="40" y="84" fill="#4a5361">Top row: what runs at launch. Bottom row: what we add as the business grows.</text>
+
+<!-- Top row: at launch -->
+<g fill="#eef4fd" stroke="#1f5fbf" stroke-width="2">
+  <rect x="40" y="150" width="220" height="84" rx="10"/>
+  <rect x="310" y="150" width="220" height="84" rx="10"/>
+  <rect x="580" y="150" width="220" height="84" rx="10"/>
+  <rect x="850" y="150" width="220" height="84" rx="10"/>
+  <rect x="1120" y="150" width="220" height="84" rx="10"/>
+</g>
+<g text-anchor="middle" fill="#12161c" font-weight="600" font-size="18">
+  <text x="150" y="186">Order system</text>
+  <text x="420" y="186">Check and clean</text>
+  <text x="690" y="186">Database</text>
+  <text x="960" y="186">Secure website</text>
+  <text x="1230" y="186">CEO</text>
+</g>
+<g text-anchor="middle" fill="#4a5361" font-size="15">
+  <text x="150" y="212">sends the orders (ERP)</text>
+  <text x="420" y="212">bad rows go to dev team</text>
+  <text x="690" y="212">2 copies, in the EU</text>
+  <text x="960" y="212">company login + MFA</text>
+  <text x="1230" y="212">sees plan and alerts</text>
+</g>
+<g stroke="#12161c" stroke-width="2" marker-end="url(#a)">
+  <line x1="260" y1="192" x2="304" y2="192"/>
+  <line x1="530" y1="192" x2="574" y2="192"/>
+  <line x1="800" y1="192" x2="844" y2="192"/>
+  <line x1="1070" y1="192" x2="1114" y2="192"/>
+</g>
+
+<!-- Bottom row: added as we grow -->
+<g fill="#fbf7ef" stroke="#8a6d3b" stroke-width="2" stroke-dasharray="8 6">
+  <rect x="310" y="330" width="220" height="84" rx="10"/>
+  <rect x="580" y="330" width="220" height="84" rx="10"/>
+  <rect x="850" y="330" width="220" height="84" rx="10"/>
+</g>
+<g text-anchor="middle" fill="#12161c" font-weight="600" font-size="18">
+  <text x="420" y="366">Live drone updates</text>
+  <text x="690" y="366">Planner (Task B)</text>
+  <text x="960" y="366">Analytics</text>
+</g>
+<g text-anchor="middle" fill="#4a5361" font-size="15">
+  <text x="420" y="392">real "delivered" beats plan</text>
+  <text x="690" y="392">which drone flies where</text>
+  <text x="960" y="392">trends and forecasts</text>
+</g>
+<g stroke="#12161c" stroke-width="2" stroke-dasharray="8 6" marker-end="url(#a)">
+  <line x1="500" y1="330" x2="626" y2="240"/>
+  <line x1="690" y1="234" x2="690" y2="324"/>
+  <line x1="754" y1="234" x2="880" y2="324"/>
+</g>
+
+<!-- Legend and footer -->
+<line x1="40" x2="100" y1="470" y2="470" stroke="#12161c" stroke-width="2"/>
+<text x="112" y="476" fill="#12161c">At launch</text>
+<line x1="240" x2="300" y1="470" y2="470" stroke="#12161c" stroke-width="2" stroke-dasharray="8 6"/>
+<text x="312" y="476" fill="#12161c">Add as we grow</text>
+<rect x="40" y="498" width="1300" height="44" rx="8" fill="#f4f6f9" stroke="#c9d0da"/>
+<text x="60" y="526" fill="#12161c"><tspan font-weight="600">Always on: </tspan>everything hosted in the EU (Frankfurt) · passwords and keys in a vault · backups · no personal data in logs</text>
+</svg>

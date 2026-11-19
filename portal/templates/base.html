@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ARC Order Portal</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header>
+    <strong>ARC Order Portal</strong>
+    {% if meta %}<span class="muted">Data as of {{ meta.imported_at }} ({{ meta.source }})</span>{% endif %}
+    {% if request.session.user %}
+    <nav class="tabs" aria-label="Sections">
+      <a href="/"{% if request.url.path == "/" %} aria-current="page"{% endif %}>Orders</a>
+      <a href="/insights"{% if request.url.path == "/insights" %} aria-current="page"{% endif %}>Insights</a>
+    </nav>
+    <form method="post" action="/logout"><button type="submit">Log out</button></form>
+    {% endif %}
+  </header>
+  <main>{% block main %}{% endblock %}</main>
+</body>
+</html>

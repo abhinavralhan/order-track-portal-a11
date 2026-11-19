@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block main %}
+<p><a href="/">Back to orders</a></p>
+<h1>Order {{ o.order_id }}</h1>
+<p>{{ o.quantity }} × {{ o.sku }} to {{ o.city }} {{ o.postcode }}</p>
+
+<ol class="timeline" aria-label="Order stages">
+  <li class="done">Pre-order received <span class="state">done</span></li>
+  {% for s in stages %}
+  {% set state = "done" if loop.index0 < current else ("current" if loop.index0 == current else "upcoming") %}
+  <li class="{{ state }}"{% if state == "current" %} aria-current="step"{% endif %}>
+    {{ s }}
+    {% if s == "In production" %}until {{ o.ready_date }}
+    {% elif s == "Ready to ship" %}{{ o.ready_date }}
+    {% elif s == "In transit" %}{{ o.ready_date }} to {{ o.delivery_date }}
+    {% else %}{{ o.delivery_date }}{% endif %}
+    <span class="state">{{ state }}</span>
+  </li>
+  {% endfor %}
+</ol>
+
+<section class="panel">
+  <h2>Owner of the current stage</h2>
+  <p>{{ owner.role }}, <a href="mailto:{{ owner.email }}">{{ owner.email }}</a></p>
+  <p><a class="button" href="{{ remind }}">Remind {{ owner.role }} about this order</a></p>
+</section>
+<p class="muted">Dates are planned: ship date = ready date, delivery = 3 working days later. No delivery confirmations are connected yet.</p>
+{% endblock %}

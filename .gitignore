@@ -1,0 +1,15 @@
+# Secrets: never commit
+.env
+.env.*
+!.env.example
+
+# Order data derived at runtime is personal data (GDPR): keep out of git
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+
+# Python
+__pycache__/
+.venv/
+.pytest_cache/

@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block main %}
+<p><a href="/">Back to orders</a></p>
+<h1>Data import report (dev team)</h1>
+<p>From the last import of {{ meta.source }}:
+  <strong>{{ counts.rejected or 0 }}</strong> rows rejected (on hold until fixed at the source),
+  <strong>{{ counts.flagged or 0 }}</strong> flagged (imported, needs a check),
+  <strong>{{ counts.fixed or 0 }}</strong> fixed automatically.</p>
+<p>Owner: {{ owner.role }}, <a href="mailto:{{ owner.email }}">{{ owner.email }}</a>.
+  <a class="button" href="{{ notify }}">Notify dev team</a></p>
+<div class="table-wrap">
+<table>
+  <thead><tr><th>File line</th><th>Order</th><th>Action</th><th>Reason</th></tr></thead>
+  <tbody>
+  {% for i in issues %}
+    <tr><td class="num">{{ i.line }}</td><td>{{ i.order_id or "(no id)" }}</td><td><span class="stage">{{ i.action }}</span></td><td>{{ i.reason }}</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% endblock %}

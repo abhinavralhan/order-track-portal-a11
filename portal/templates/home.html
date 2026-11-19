@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block main %}
+<section class="panel{% if attention_items or stale %} alert{% endif %}" aria-labelledby="attn">
+  <h2 id="attn">Needs your attention today ({{ today }})</h2>
+  {% if stale %}
+  <p class="error">Figures may be out of date: the last data import was {{ stale.hours }} hours ago.
+    <a class="button" href="{{ stale.href }}">Remind {{ stale.owner.role }}</a></p>
+  {% endif %}
+  {% if attention_items %}
+  <ul>
+    {% for a in attention_items %}
+    <li><span class="count">{{ a.count }}</span> {{ a.what }}. Owner: {{ a.owner.role }}.
+        <a class="button" href="{{ a.href }}">Remind {{ a.owner.role }}</a></li>
+    {% endfor %}
+  </ul>
+  {% elif not stale %}
+  <p>Nothing needs attention today.</p>
+  {% endif %}
+</section>
+
+<h1>Orders</h1>
+<p class="muted">Today: {{ today }} (Europe/Berlin). Ship date = ready date. Planned delivery = 3 working days later, skipping weekends and holidays at the factory and the destination.</p>
+
+<nav aria-label="Order stages">
+  <ol class="pipeline">
+    {% for s in stages %}
+    <li><a href="/?stage={{ s|urlencode }}"{% if s == stage %} aria-current="true"{% endif %}><span class="count">{{ counts[s] or 0 }}</span> {{ s }}</a></li>
+    {% endfor %}
+  </ol>
+</nav>
+<p class="muted">All orders are pre-orders. Raw-material and production-step data are not connected yet, so "In production" means the ready date is still ahead.</p>
+
+<form method="get" action="/" class="search" role="search">
+  <label for="q">Order ID</label>
+  <input id="q" name="q" value="{{ q }}" maxlength="40" placeholder="e.g. ACME-00042">
+  {% if stage %}<input type="hidden" name="stage" value="{{ stage }}">{% endif %}
+  <button type="submit">Search</button>
+  {% if q or stage %}<a href="/">Clear</a>{% endif %}
+</form>
+
+{% for oid, href in on_hold %}
+<p class="error" role="alert">{{ oid }} is on hold: its order data has an error that must be fixed at the source.
+  <a class="button" href="{{ href }}">Notify dev team</a></p>
+{% endfor %}
+
+<p>{{ total }} order{{ "" if total == 1 else "s" }}{% if stage %} in "{{ stage }}"{% endif %}{% if q %} matching "{{ q }}"{% endif %}{% if pages > 1 %}, page {{ page }} of {{ pages }}{% endif %}.</p>
+<div class="table-wrap">
+<table>
+  <thead><tr><th>Order</th><th>SKU</th><th>Qty</th><th>Destination</th><th>Ships (ready)</th><th>Planned delivery</th><th>Stage</th></tr></thead>
+  <tbody>
+  {% for o in orders %}
+    <tr><td><a href="/orders/{{ o.order_id|urlencode }}">{{ o.order_id }}</a></td><td>{{ o.sku }}</td><td class="num">{{ o.quantity }}</td><td>{{ o.city }} {{ o.postcode }}</td>
+        <td>{{ o.ready_date }}</td><td>{{ o.delivery_date }}</td><td><span class="stage">{{ o.stage }}</span></td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% if pages > 1 %}
+<nav class="pager" aria-label="Pages">
+  {% if prev %}<a class="button" href="{{ prev }}" rel="prev">Previous</a>{% endif %}
+  <span>Page {{ page }} of {{ pages }}</span>
+  {% if next %}<a class="button" href="{{ next }}" rel="next">Next</a>{% endif %}
+</nav>
+{% endif %}
+
+<h2>Who owns each stage</h2>
+<ul class="contacts">
+  {% for c in contacts %}
+  <li><strong>{{ c.stages }}</strong>: {{ c.role }}, <a href="mailto:{{ c.email }}">{{ c.email }}</a></li>
+  {% endfor %}
+</ul>
+<p class="muted"><a href="/quality">Data import report</a> (for the dev team)</p>
+{% endblock %}

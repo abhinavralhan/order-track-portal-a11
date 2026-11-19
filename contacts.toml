@@ -1,0 +1,19 @@
+# Owner per stage, shown on the portal and used for 1-click reminders.
+# Role mailboxes only, no personal names (GDPR data minimisation for staff).
+# Placeholder addresses: replace them with real role mailboxes in the deployed copy.
+
+[production]
+role = "Production lead"
+email = "production@example.com"
+
+[shipping]
+role = "Drone operations"
+email = "drone-ops@example.com"
+
+[customer]
+role = "Customer service (ACME account)"
+email = "customer-service@example.com"
+
+[data]
+role = "Dev / data team"
+email = "dev-team@example.com"
