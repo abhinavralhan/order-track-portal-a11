@@ -16,7 +16,7 @@ Takehome "Supply Chain Optimization" (`TAKEHOME_README.md`). The README and `dat
 - Audit (`/ponytail-audit`): 7 findings, all fixed: empty-orders crash on /insights, stage names in one place (`insights.STAGES`),
   shared order-ID rule (`importer.ORDER_ID`), case-only duplicates deduped, bounded login-failure memory, misplaced comment, dead .gitignore rule.
 - Secret scan: gitleaks not installed; a pattern scan of all 29 committable files found nothing. `.env`, `.env.login`, `data/portal.db` are gitignored and 0600.
-- Git: **paused by the user, nothing committed.** When it resumes: commit after every small change, **no Claude co-author lines**.
+- Git: pushed to https://github.com/abhinavralhan/order-track-portal-a11 (public, branch main). Commit after every small change, **no Claude co-author lines**.
 - Known: pytest shows 1 deprecation warning (starlette wants `httpx2` instead of `httpx`); the swap needs the user's approval.
 
 ## How to run
